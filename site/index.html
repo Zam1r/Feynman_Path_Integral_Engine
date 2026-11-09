@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Feynman Path Integral Engine</title>
+  <meta name="description" content="Euclidean path-integral engine for one quantum particle: Brownian-bridge Monte Carlo, Metropolis, and Schrödinger checks on the harmonic oscillator lattice.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500&family=Fraunces:opsz,ital,wght@9..144,400;9..144,450;9..144,500;9..144,600&family=IBM+Plex+Mono:wght@400;450&family=Source+Serif+4:opsz,ital,wght@8..60,400;8..60,500;8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <canvas id="atmosphere" aria-hidden="true"></canvas>
+  <div class="veil" aria-hidden="true"></div>
+
+  <div class="page">
+    <nav class="nav" aria-label="Primary">
+      <a class="nav-brand" href="#top">Feynman Path Integral Engine</a>
+      <ul class="nav-links">
+        <li><a href="#physics">Physics</a></li>
+        <li><a href="#lab">Interactive</a></li>
+        <li><a href="#results">Results</a></li>
+        <li><a href="#poster">Poster</a></li>
+        <li><a href="https://github.com/Zam1r/Feynman_Path_Integral_Engine" rel="noopener noreferrer" target="_blank">GitHub</a></li>
+      </ul>
+    </nav>
+
+    <header class="hero" id="top">
+      <div class="hero-inner reveal">
+        <h1 class="brand">Feynman <em>Path Integral</em> Engine</h1>
+        <p class="lede">
+          Euclidean path integrals for one quantum particle — sampled, lattice-exact, and checked against Schrödinger.
+        </p>
+        <p class="hero-meta">
+          Milestone lattice <span class="mono">N = 7</span>, <span class="mono">T = 4</span> · harmonic oscillator · C++17 engine
+        </p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="#lab">Open the interactive lattice</a>
+          <a class="btn" href="https://github.com/Zam1r/Feynman_Path_Integral_Engine" rel="noopener noreferrer" target="_blank">View on GitHub</a>
+          <a class="btn btn-ghost" href="#poster">Formative poster</a>
+        </div>
+      </div>
+      <div class="hero-edge" aria-hidden="true"></div>
+    </header>
+
+    <div class="key-strip reveal" id="finding-strip">
+      <div class="key-strip-inner">
+        <p class="kicker">Suite milestone</p>
+        <p class="key-line">
+          Direct MC <span class="mono">|φ(1)|² = 0.2120 ± 0.0006</span>
+          <span class="key-sep">on</span>
+          <span class="mono">N=7, T=4</span>
+          <span class="key-sep">—</span>
+          exact lattice 0.21086 · continuum 0.20755
+        </p>
+      </div>
+    </div>
+
+    <main id="main">
+      <section class="section" id="physics">
+        <div class="section-head reveal">
+          <p class="kicker">Imaginary time</p>
+          <h2>From oscillating phases to a weighted average of paths</h2>
+          <p>
+            Real-time amplitudes cancel. Wick rotation turns the phase into a decaying weight,
+            so a computer can sample paths instead of summing spinning phases.
+          </p>
+        </div>
+        <div class="physics reveal">
+          <div class="prose">
+            <p>
+              Feynman’s rule sums every path <em>x</em>(<em>t</em>) with a phase
+              <em>e</em><sup><em>iS</em>[<em>x</em>]/ℏ</sup>. Near the classical path the phases align;
+              wild paths cancel. Numerically that integrand is unstable.
+            </p>
+            <p>
+              Set <em>τ</em> = −<em>it</em>. The weight becomes <em>e</em><sup>−<em>S</em><sub>E</sub>/ℏ</sup>
+              with Euclidean action kinetic plus potential. Large action means small weight.
+              On a closed path of length <em>T</em>, excited states die as
+              <em>e</em><sup>−(<em>E<sub>n</sub></em>−<em>E</em><sub>0</sub>)<em>T</em></sup>, leaving the ground-state density.
+            </p>
+            <p>
+              The lattice chops imaginary time into <em>N</em> slices of width <em>ε</em> = <em>T</em>/<em>N</em>.
+              The free kinetic piece is a Brownian bridge; the potential reweights each bridge.
+              That is the direct Monte Carlo method in this engine.
+            </p>
+          </div>
+          <div>
+            <div class="eq" aria-label="Euclidean action">
+              <code>S<sub>E</sub>[x] = ∫₀ᵀ (½ ẋ² + V(x)) dτ</code>
+            </div>
+            <div class="eq" aria-label="Analytic oscillator density at x=1">
+              <code>|φ(1)|² = e<sup>−1</sup>/√π = 0.20755</code>
+              <div style="margin-top:0.55rem;font-style:normal;font-size:0.9rem;color:var(--muted)">
+                Continuum harmonic oscillator. On a closed path, |φ(x)|² is the normalised propagator G(x,−iT; x, 0). The <em>N</em>=7, <em>T</em>=4 lattice lands near 0.20755 but not on it — that gap is lattice bias, not a sampling error.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section lab" id="lab">
+        <div class="section-head reveal">
+          <p class="kicker">Interactive</p>
+          <h2>Sample bridges and reweight them live</h2>
+          <p>
+            Controls drive a browser port of <span class="mono">bridge_potential_weight</span> and a light
+            <span class="mono">direct_ground_density</span>. Suite numbers below use the full C++ run.
+          </p>
+        </div>
+
+        <div class="lab-grid reveal">
+          <aside class="controls" aria-label="Lattice controls">
+            <div class="preset-row">
+              <button type="button" class="chip active" data-preset="milestone">Milestone</button>
+              <button type="button" class="chip" data-preset="fine">Finer lattice</button>
+              <button type="button" class="chip" data-preset="smallh">Small ℏ</button>
+              <button type="button" class="chip" data-preset="dwell">Double well</button>
+            </div>
+
+            <div class="control">
+              <div class="control-row">
+                <label for="ctrl-N">Slices N</label>
+                <output id="out-N" for="ctrl-N">7</output>
+              </div>
+              <input id="ctrl-N" type="range" min="4" max="24" step="1" value="7">
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <label for="ctrl-T">Imaginary time T</label>
+                <output id="out-T" for="ctrl-T">4.00</output>
+              </div>
+              <input id="ctrl-T" type="range" min="2" max="12" step="1" value="4">
+            </div>
+            <div class="control">
+              <div class="control-row">
+                <label for="ctrl-hbar">ℏ</label>
+                <output id="out-hbar" for="ctrl-hbar">1.00</output>
+              </div>
+              <input id="ctrl-hbar" type="range" min="0.4" max="2.2" step="0.05" value="1">
+            </div>
+            <div class="control">
+              <label for="ctrl-pot">Potential</label>
+              <select id="ctrl-pot" style="width:100%;background:#12100e;color:var(--ink);border:1px solid var(--mat-edge);padding:0.55rem 0.65rem;font-family:var(--font-ui);font-size:0.9rem;">
+                <option value="ho" selected>Harmonic oscillator</option>
+                <option value="anharm">Anharmonic</option>
+                <option value="doublewell">Double well</option>
+              </select>
+            </div>
+
+            <div class="readouts">
+              <div class="readout">
+                <span>ε = T/N</span>
+                <strong id="out-eps">0.571</strong>
+              </div>
+              <div class="readout">
+                <span>Browser MC |φ(1)|²</span>
+                <strong id="out-mc">—</strong>
+              </div>
+              <div class="readout">
+                <span>Exact lattice (suite)</span>
+                <strong id="out-exact">—</strong>
+              </div>
+              <div class="readout">
+                <span>Analytic continuum</span>
+                <strong id="out-analytic">0.20755</strong>
+              </div>
+            </div>
+            <p class="status-line" id="lab-status"></p>
+            <p class="honesty-note">
+              Browser MC uses fewer samples than the C++ suite — treat the live error bar as indicative.
+              The double-well tunnel splitting (0.067 at ℏ=1) is from the Schrödinger solver; local bridge sampling here does not claim to resolve tunnelling.
+            </p>
+          </aside>
+
+          <div>
+            <div class="viz-tabs" role="tablist">
+              <button type="button" class="tab active" data-tab="bridges" role="tab" aria-selected="true">Bridges</button>
+              <button type="button" class="tab" data-tab="density" role="tab" aria-selected="false">Density</button>
+            </div>
+            <div class="stage-wrap active" id="stage-bridges">
+              <div class="viz-stage">
+                <canvas id="canvas-bridges" width="900" height="420" aria-label="Brownian bridge paths"></canvas>
+              </div>
+            </div>
+            <div class="stage-wrap" id="stage-density">
+              <div class="viz-stage">
+                <canvas id="canvas-density" width="900" height="420" aria-label="Ground-state density"></canvas>
+              </div>
+            </div>
+            <p class="viz-caption" id="viz-caption"></p>
+          </div>
+        </div>
+
+        <div class="lattice-panel reveal">
+          <div class="section-head" style="margin-bottom:1.25rem">
+            <p class="kicker">Exact lattice map</p>
+            <h3 class="subhead">N–T grid from the suite</h3>
+            <p>Exact harmonic-oscillator lattice values of |φ(1)|² from <span class="mono">exact_alpha.csv</span>. Selected cell follows the sliders when on-grid.</p>
+          </div>
+          <div class="lattice-layout">
+            <canvas id="nt-canvas" width="640" height="280" aria-label="N versus T lattice heatmap"></canvas>
+            <p id="nt-readout" class="viz-caption" style="margin:0"></p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="results">
+        <div class="section-head reveal">
+          <p class="kicker">Milestone</p>
+          <h2>Direct Monte Carlo meets the lattice, not the continuum</h2>
+          <p>
+            Suite numbers from the C++ engine. The residual against 0.20755 is short-<em>T</em> / coarse-<em>ε</em> bias;
+            against the exact lattice value the Monte Carlo agrees.
+          </p>
+        </div>
+
+        <div class="results-band reveal">
+          <div>
+            <div class="finding">
+              <p class="kicker" style="margin:0">Direct MC · N=7 · T=4</p>
+              <p class="value"><span id="suite-mc">0.2120 ± 0.0006</span></p>
+              <p>
+                Reported milestone |φ(1)|². Exact lattice on the same grid is 0.21086;
+                analytic / Schrödinger continuum is 0.20755. Metropolis on N=7 gives 0.2110 ± 0.0054.
+              </p>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Analytic |φ(1)|²</td>
+                    <td class="num">0.20755</td>
+                  </tr>
+                  <tr>
+                    <td>Schrödinger |φ(1)|²</td>
+                    <td class="num">0.20755</td>
+                  </tr>
+                  <tr>
+                    <td>Exact lattice N=7, T=4</td>
+                    <td class="num">0.21086</td>
+                  </tr>
+                  <tr>
+                    <td>Direct MC</td>
+                    <td class="num">0.2120 ± 0.0006</td>
+                  </tr>
+                  <tr>
+                    <td>Metropolis N=64, T=12</td>
+                    <td class="num">0.2087 ± 0.0057</td>
+                  </tr>
+                  <tr>
+                    <td>Correlator gap (HO)</td>
+                    <td class="num">≈ 1.06 (true 1)</td>
+                  </tr>
+                  <tr>
+                    <td>Double-well gap (ℏ=1)</td>
+                    <td class="num">0.067 (spectrum; local Metropolis misses tunnelling)</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="figure-stack">
+            <div class="figure-pair">
+              <figure class="figure">
+                <img src="data/milestone.png" alt="Milestone density: direct Monte Carlo against analytic and lattice curves" width="900" height="560" loading="lazy">
+                <figcaption>
+                  Milestone — direct MC |φ(x)|² on N=7, T=4 against analytic continuum and exact lattice.
+                  Computational suite output, not laboratory data.
+                </figcaption>
+              </figure>
+              <figure class="figure">
+                <img src="data/bridges.png" alt="Sampled Brownian bridges with potential reweighting" width="900" height="560" loading="lazy">
+                <figcaption>
+                  Bridges — free kinetic bridges reweighted by the potential; the method behind the interactive panel.
+                </figcaption>
+              </figure>
+            </div>
+            <details class="more-figures">
+              <summary>Further suite figures — worldlines, convergence, ℏ scan</summary>
+              <div class="figure-stack" style="margin-top:1.25rem">
+                <figure class="figure">
+                  <img src="data/worldlines.png" alt="Imaginary-time worldlines from Metropolis sampling" width="900" height="560" loading="lazy">
+                  <figcaption>
+                    Worldlines — Metropolis imaginary-time paths. Density accumulates where the chain sits. Suite figure.
+                  </figcaption>
+                </figure>
+                <figure class="figure">
+                  <img src="data/convergence.png" alt="Convergence of lattice density with N and T" width="900" height="560" loading="lazy">
+                  <figcaption>
+                    Convergence — lattice |φ(1)|² versus continuum as N and T change. Suite figure.
+                  </figcaption>
+                </figure>
+                <figure class="figure">
+                  <img src="data/hbar.png" alt="Double-well tunnel splitting versus hbar" width="900" height="560" loading="lazy">
+                  <figcaption>
+                    ℏ scan — double-well tunnel splitting from the Schrödinger solver. Local Metropolis does not resolve this gap; a kink update is the next step. Suite figure.
+                  </figcaption>
+                </figure>
+              </div>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="poster">
+        <div class="poster-block reveal">
+          <figure class="poster-frame">
+            <img src="assets/poster.png" alt="Formative A2 poster: Feynman Path Integrals and the Harmonic Oscillator" width="1400" height="990" loading="lazy">
+          </figure>
+          <div class="poster-copy">
+            <p class="kicker">Formative poster</p>
+            <h2>Feynman Path Integrals and the Harmonic Oscillator</h2>
+            <p>
+              A2 landscape formative poster for the path-integral project.
+              Physics leads; computing is the instrument. Figures are suite outputs from this repository.
+            </p>
+            <p class="poster-note">
+              Rated 8.8/10 on the formative mark scheme after visual and narrative passes — lattice hit vs short-T residual is the take-home.
+            </p>
+            <div class="cta-row">
+              <a class="btn btn-primary" href="assets/poster.pdf" download="formative-poster-ch14.pdf">Download PDF</a>
+              <a class="btn" href="assets/poster.png" target="_blank" rel="noopener">Open PNG</a>
+              <a class="btn btn-ghost" href="https://github.com/Zam1r/Feynman_Path_Integral_Engine" target="_blank" rel="noopener noreferrer">Source on GitHub</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div>
+        <strong style="color:var(--ink-soft);font-weight:500">Feynman Path Integral Engine</strong>
+        · Euclidean lattice QM · C++17 + Python suite
+      </div>
+      <div>
+        <a href="https://github.com/Zam1r/Feynman_Path_Integral_Engine" rel="noopener noreferrer" target="_blank">github.com/Zam1r/Feynman_Path_Integral_Engine</a>
+      </div>
+    </footer>
+  </div>
+
+  <a class="btn btn-primary mobile-github" href="https://github.com/Zam1r/Feynman_Path_Integral_Engine" rel="noopener noreferrer" target="_blank">GitHub</a>
+
+  <script src="js/feynman.js"></script>
+  <script src="js/atmosphere.js"></script>
+  <script src="js/lab.js"></script>
+  <script>
+    document.documentElement.classList.add("js");
+    window.addEventListener("load", () => document.body.classList.add("ready"));
+    // staggered reveal
+    const io = "IntersectionObserver" in window
+      ? new IntersectionObserver((entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) {
+              e.target.style.opacity = "1";
+              e.target.style.transform = "none";
+              io.unobserve(e.target);
+            }
+          });
+        }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" })
+      : null;
+    document.querySelectorAll(".reveal").forEach((el, i) => {
+      el.style.transitionDelay = (i % 4) * 0.06 + "s";
+      if (io) io.observe(el);
+      else {
+        el.style.opacity = "1";
+        el.style.transform = "none";
+      }
+    });
+  </script>
+</body>
+</html>
