@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+data/probe.json
+third_party/
+shot_*.png
+build/runlog.txt
+build/link_verbose.txt
+First_attempt/env/
