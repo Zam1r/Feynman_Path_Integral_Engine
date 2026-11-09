@@ -4,21 +4,15 @@ The milestone is the ground state of a harmonic oscillator, worked out two ways.
 
 I use units where the mass and $\hbar$ are both 1, and
 
-$$
-V(x) = \frac12 x^2.
-$$
+$$V(x) = \frac12 x^2.$$
 
 The true ground state is known,
 
-$$
-|\phi(x)|^2 = \frac{e^{-x^2}}{\sqrt{\pi}},
-$$
+$$|\phi(x)|^2 = \frac{e^{-x^2}}{\sqrt{\pi}},$$
 
 so at $x = 1$
 
-$$
-|\phi(1)|^2 = 0.20755.
-$$
+$$|\phi(1)|^2 = 0.20755.$$
 
 The path integral on the milestone lattice does not land exactly on that number. It lands on $0.2120 \pm 0.0006$. That is the right answer for the lattice I was asked to use. The rest of this note is why, and what I changed so the same code can go further.
 
@@ -30,21 +24,13 @@ That sum is horrible to compute, because the phases oscillate. The trick used he
 
 On a lattice the weight of one path is $e^{-\epsilon E}$, with
 
-$$
-E = \sum_{j=1}^{N}
-\left[
-\frac{m}{2}\left(\frac{x_j - x_{j-1}}{\epsilon}\right)^2
-+ V\left(\frac{x_j + x_{j-1}}{2}\right)
-\right].
-$$
+$$E = \sum_{j=1}^{N} \left[ \frac{m}{2}\left(\frac{x_j - x_{j-1}}{\epsilon}\right)^2 + V\left(\frac{x_j + x_{j-1}}{2}\right) \right].$$
 
 $N$ is the number of time slices, $\epsilon = T/N$ is the step, and the potential is evaluated halfway between neighbouring points, which is what the project brief writes down. A path is just the list of positions $x_0, x_1, \ldots, x_N$.
 
 The ground-state density is the propagator that starts and ends at the same place, normalised:
 
-$$
-|\phi(x)|^2 = \frac{G(x,-iT;x,0)}{\int G(x,-iT;x,0)\,dx}.
-$$
+$$|\phi(x)|^2 = \frac{G(x,-iT;x,0)}{\int G(x,-iT;x,0)\,dx}.$$
 
 Long $T$ kills the excited states, because they decay as $e^{-(E_n-E_0)T}$. For this oscillator the gap is 1, so at $T = 4$ the first excited state is down by a factor $e^{-4} \approx 0.018$. Small, but not nothing. That leftover is visible in the results.
 
@@ -107,15 +93,11 @@ Doing the integral by throwing the interior points uniformly into a box is a was
 
 A free particle on this lattice is a Brownian bridge. Given the two ends, each interior point is a Gaussian whose mean is the straight interpolation toward the far end, and whose variance is
 
-$$
-\sigma^2 = \epsilon\,\hbar/m
-$$
+$$\sigma^2 = \epsilon\,\hbar/m$$
 
 times the fraction of the bridge still to go. That distribution is exactly the kinetic part of $e^{-\epsilon E}$. Each sampled path is then given the potential weight
 
-$$
-w = \exp\left(-\sum_j \epsilon\, V(\text{midpoint}_j)/\hbar\right).
-$$
+$$w = \exp\left(-\sum_j \epsilon\, V(\text{midpoint}_j)/\hbar\right).$$
 
 The average of $w$, as a function of the pinned position $x$, is proportional to $G(x,x)$. I divide by the trapezium integral over $x$ so the density integrates to 1. Errors come from splitting the samples into batches and taking the scatter of those batches, which includes the uncertainty from the normalisation.
 
@@ -127,17 +109,13 @@ The code for this lives in `cpp/feynman/direct.hpp` (`direct_ground_density`, `b
 
 The other curve is a straight numerical solution of
 
-$$
--\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V\psi = E\psi
-$$
+$$-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + V\psi = E\psi$$
 
 on a grid from $-10$ to $10$ with 4001 interior points. The Hamiltonian is tridiagonal. I find the lowest eigenvalue with a Sturm count and bisection, then the ground-state vector by inverse iteration. The residual on that vector is about $4 \times 10^{-12}$.
 
 It gives
 
-$$
-E_0 = 0.499999, \qquad |\phi(1)|^2 = 0.20755,
-$$
+$$E_0 = 0.499999, \qquad |\phi(1)|^2 = 0.20755,$$
 
 which is the analytic answer to five figures. So when the path integral disagrees with this curve, the path integral is the one carrying the lattice error.
 
@@ -165,9 +143,7 @@ Two separate things move the answer, and they move it in different directions.
 
 At finite $T$ the density is not yet the ground state. For this oscillator the exact continuum result at imaginary time $T$ is still a Gaussian, but narrower in the exponent:
 
-$$
-|\phi_T(x)|^2 = \sqrt{\frac{\tanh(T/2)}{\pi}}\, e^{-x^2 \tanh(T/2)}.
-$$
+$$|\phi_T(x)|^2 = \sqrt{\frac{\tanh(T/2)}{\pi}}\, e^{-x^2 \tanh(T/2)}.$$
 
 At $T = 4$, $\tanh 2 \approx 0.964$, and $|\phi(1)|^2$ comes out at 0.21125. That is already 1.8% above the ground state. Making the lattice finer at fixed $T = 4$ walks you toward 0.21125. It does not walk you toward 0.20755.
 
@@ -196,15 +172,11 @@ I tune $\delta$ on a short pilot so the acceptance sits near 45%, then I freeze 
 
 On the same little lattice as the milestone, Metropolis gives
 
-$$
-|\phi(1)|^2 = 0.2110 \pm 0.0054,
-$$
+$$|\phi(1)|^2 = 0.2110 \pm 0.0054,$$
 
 which covers the exact lattice value 0.21086. On the long lattice,
 
-$$
-|\phi(1)|^2 = 0.2087 \pm 0.0057, \qquad \langle x^2\rangle = 0.492 \pm 0.006.
-$$
+$$|\phi(1)|^2 = 0.2087 \pm 0.0057, \qquad \langle x^2\rangle = 0.492 \pm 0.006.$$
 
 The ground state has $\langle x^2\rangle = 1/2$ and $|\phi(1)|^2 = 0.20755$. Both measurements agree with that, with errors of a few percent. The direct method on $N = 7$ was tighter on its own lattice; Metropolis is the one that can actually reach the ground state.
 
@@ -214,9 +186,7 @@ The chain is settled before I start averaging. The autocorrelation of $\langle x
 
 The correlator $\langle x(\tau) x(0)\rangle$ is the way into excited states. For this oscillator it should be
 
-$$
-\langle x(\tau)x(0)\rangle = \frac12 \frac{\cosh(\omega(T/2-\tau))}{\sinh(\omega T/2)}
-$$
+$$\langle x(\tau)x(0)\rangle = \frac12 \frac{\cosh(\omega(T/2-\tau))}{\sinh(\omega T/2)}$$
 
 with $\omega = 1$. The measured points follow that curve. A rough slope on the log of the correlator gives a gap of 1.06, against the true gap of 1. Good enough to see that the first excited state is sitting where it should, which is the thing I want this observable for later.
 
@@ -234,9 +204,7 @@ The lower right is the milestone itself. Every bridge is pinned at $x = 1$ at bo
 
 A classical particle with the ground-state energy $E = 1/2$ is stuck between the turning points $x = \pm 1$. It also moves slowly at the ends, so the time-averaged density piles up there and diverges:
 
-$$
-\rho_{\mathrm{cl}}(x) = \frac{1}{\pi\sqrt{1-x^2}}, \qquad |x| < 1.
-$$
+$$\rho_{\mathrm{cl}}(x) = \frac{1}{\pi\sqrt{1-x^2}}, \qquad |x| < 1.$$
 
 ![Classical dwell-time density against the quantum ground state. The shaded regions are forbidden to the classical particle.](figures/classical.png)
 
