@@ -1,6 +1,6 @@
 # Feynman path integral engine
 
-A Euclidean path integral for one quantum particle, written so that each step can be checked against a number you can compute by hand. The milestone is the harmonic oscillator on the lattice \(N = 7\), \(T = 4\). The same library then runs a Metropolis chain, a Schrödinger solver, a window you can drag, and a histogram at up to a million slices.
+Third-year computing project, chapter 14. A Euclidean path integral for one quantum particle, written so that each step can be checked against a number you can compute by hand. The milestone is the harmonic oscillator on the lattice \(N = 7\), \(T = 4\). The same library then runs a Metropolis chain, a Schrödinger solver, a window you can drag, and a histogram at up to a million slices.
 
 The marks write-up, with the figures and the quoted errors, is [`WRITEUP.md`](WRITEUP.md). The short note on the tunnel splitting is [`THEORY.md`](THEORY.md). This file is the walk-through: the physics, then the algorithms, then the optimisations, then how to run it.
 
